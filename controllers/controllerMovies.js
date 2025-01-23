@@ -1,14 +1,11 @@
 const dbConnection = require("../data/dbConnection");
 
-const index = (req, res) => {
+const index = (req, res, next) => {
     const sql = "SELECT * FROM movies";
 
     dbConnection.query(sql, (err, movie) => {
         if (err) {
-            return res.status(500).json({
-                status: "fail",
-                message: "errore interno del server"
-            })
+            return next(new Error(err.message));
         }
         return res.status(200).json({
             status: "success",
@@ -20,7 +17,7 @@ const index = (req, res) => {
 }
 
 
-const show = (req, res) => {
+const show = (req, res,next) => {
     const id = req.params.id;
 
     const sql = "SELECT * FROM movies WHERE id = ?";
@@ -36,10 +33,7 @@ const show = (req, res) => {
 
 
         if (err) {
-            return res.status(500).json({
-                status: "fail",
-                message: "errore interno del server"
-            })
+            return next(new Error(err.message));
         }
         if (res.length === 0) {
             return res.status(404).json({
