@@ -9,9 +9,7 @@ const index = (req, res, next) => {
     const params =[];
 // creo condizione che inserisce la stringa di ricerca se esiste
     if (filters.search) {
-      sql += `
-        WHERE title LIKE ?;
-      `;
+      sql += "WHERE title LIKE ?";
       params.push(`%${filters.search}%`);
     }
 
@@ -32,8 +30,13 @@ const index = (req, res, next) => {
 const show = (req, res,next) => {
     const id = req.params.id;
 
-    const sql = "SELECT * FROM movies WHERE id = ?";
-    
+    const sql = `
+    SELECT movies.*
+    FROM movies
+    LEFT JOIN reviews
+    ON reviews.movie_id = movies.id
+    WHERE movies.id = ?
+  `;
     const sqlReviews = 
     `SELECT reviews.* 
     FROM reviews
@@ -48,7 +51,7 @@ const show = (req, res,next) => {
         if (err) {
             return next(new Error(err.message));
         }
-        if (res.length === 0) {
+        if (result.length === 0) {
             return res.status(404).json({
                 status: "fail",
                 message: "Film non trovato",
