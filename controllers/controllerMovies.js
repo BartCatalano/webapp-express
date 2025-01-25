@@ -1,9 +1,21 @@
 const dbConnection = require("../data/dbConnection");
 
 const index = (req, res, next) => {
-    const sql = "SELECT * FROM movies";
+// prendo Qstring per i filtri
+  const filters = req.query;
 
-    dbConnection.query(sql, (err, movie) => {
+    const sql = "SELECT * FROM movies";
+    // creo array vuoto  per i params
+    const params =[];
+// creo condizione che inserisce la stringa di ricerca se esiste
+    if (filters.search) {
+      sql += `
+        WHERE title LIKE ?;
+      `;
+      params.push(`%${filters.search}%`);
+    }
+
+    dbConnection.query(sql, params, (err, movie) => {
         if (err) {
             return next(new Error(err.message));
         }
@@ -21,6 +33,7 @@ const show = (req, res,next) => {
     const id = req.params.id;
 
     const sql = "SELECT * FROM movies WHERE id = ?";
+    
     const sqlReviews = 
     `SELECT reviews.* 
     FROM reviews
