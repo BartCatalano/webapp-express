@@ -4,12 +4,14 @@ const index = (req, res, next) => {
 // prendo Qstring per i filtri
   const filters = req.query;
 
-    const sql = "SELECT * FROM movies";
+    let sql = "SELECT * FROM movies";
     // creo array vuoto  per i params
     const params =[];
 // creo condizione che inserisce la stringa di ricerca se esiste
     if (filters.search) {
-      sql += "WHERE title LIKE ?";
+      sql += `
+      WHERE title LIKE ?;
+    `;
       params.push(`%${filters.search}%`);
     }
 
